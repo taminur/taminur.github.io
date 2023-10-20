@@ -4,8 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Md. Taminur Rahman</title>
+    <link href="styles/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <p> Hello world!</p>
+    <!-- For navigation bar -->
+    <nav class="navbar sticky-top navbar-expand-md bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="index.html">Home</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- The below ms-auto will move the links to the right -->
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> 
+              <li class="nav-item">
+                <!-- <a class="nav-link active" aria-current="page" href="resume.html">Resume</a> -->
+                <a class="nav-link active" aria-current="page" href="#" id="resume">Resume</a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#" id="portfolio">Portfolio</a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#" id="contact">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+    
+    <section id="template">
+      <div class="contaner">
+        <div class="row">
+          <div class="col-md-8">
+            <img src="img/sunglass.jpg" class="mx-auto d-none d-md-block">
+          </div>
+          <div class="col-md-4 my-auto text-center">
+          <h4>Hi, I am &nbsp;</h4>
+          <h2><strong>Md. Taminur Rahman</strong></h2>  
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-light text-center text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-2" style="background-color: rgba(0, 0, 0, 0.2);">
+          <p>&copy; 2023 Copyright
+              <a class="text-dark" href="https://taminur.github.io/">Md. Taminur Rahman</a>
+          </p>
+        </div>
+        <!-- Copyright -->
+      </footer>
+
+    <script src="scripts/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts/scripts.js"></script>
 </body>
 </html>
