@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex; /* Flexbox for easy splitting */
+    height: 100vh; /* Full viewport height */
+}
+
+.left-section {
+    flex: 1; /* Takes 50% width */
+    padding: 20px;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.right-section {
+    flex: 1; /* Takes 50% width */
+    padding: 20px;
+    color: #006747;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    text-align: center; /* Center text within headings */
+}
+
+.right-section h1 {
+    font-size: 5rem;
+    margin: 0 0 0.5rem 0; /* top | right | bottom | left */
+    line-height: 1.2; /* Better spacing for large text */
+}
+
+.right-section h2 {
+    font-size: 3rem;
+    margin: 0; /* Reset all margins */
+    font-weight: normal; /* Optional: if you want less bold */
+    line-height: 1.4; /* Better readability */
+}
