@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    padding-top: 40px;
     font-family: Arial, sans-serif;
 }
 
@@ -61,9 +62,18 @@ header nav ul li a:hover {
   background-color: #111;
 }
 
-header {
+/* header {
   position: sticky;
   top: 0;
+  z-index: 1000;
+  background: #333;
+} */
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
   background: #333;
 }
@@ -109,7 +119,7 @@ img{
   height: auto;
 }
 
-footer {
+div footer {
   background-color: #333;
   color: white;
   text-align: center;
