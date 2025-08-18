@@ -61,6 +61,13 @@ header nav ul li a:hover {
   background-color: #111;
 }
 
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #333;
+}
+
 footer {
   background-color: #333;
   color: white;
