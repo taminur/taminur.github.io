@@ -68,6 +68,47 @@ header {
   background: #333;
 }
 
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  min-width: 200px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  border-radius: 4px;
+  z-index: 1001;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 0;
+}
+
+.dropdown-menu a {
+  color: #333 !important;
+  padding: 10px 15px !important;
+  display: block;
+  transition: background 0.3s;
+}
+
+.dropdown-menu a:hover {
+  background: #f0f0f0;
+}
+
+img{
+  width: 100%;
+  height: auto;
+}
+
 footer {
   background-color: #333;
   color: white;
@@ -80,9 +121,4 @@ footer {
 .footer-content p {
   margin: 0;
   padding: 0;
-}
-
-/* Dynamic year update (no need to edit HTML yearly) */
-#year::after {
-  content: js-current-year; /* Fallback */
 }
