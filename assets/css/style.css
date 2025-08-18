@@ -39,3 +39,43 @@ body {
     font-weight: normal; /* Optional: if you want less bold */
     line-height: 1.4; /* Better readability */
 }
+
+header nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: #333;
+  display: flex;
+  justify-content: flex-end; /* Shifts all items to the right */
+}
+
+header nav ul li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+header nav ul li a:hover {
+  background-color: #111;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-top: auto; /* Pushes footer to bottom if using flex layout */
+  font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.footer-content p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Dynamic year update (no need to edit HTML yearly) */
+#year::after {
+  content: js-current-year; /* Fallback */
+}
