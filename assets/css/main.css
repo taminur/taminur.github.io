@@ -18,8 +18,8 @@ main {
 }
 
 .rounded-custom {
-  border-top-left-radius: 25px;
-  border-bottom-right-radius: 25px;
+  border-top-left-radius: 100px;
+  /* border-bottom-right-radius: 25px; */
 }
 
 .trimmed-diagonal {
