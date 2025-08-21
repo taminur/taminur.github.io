@@ -47,8 +47,8 @@ main {
   border-radius: 12px;
   overflow: hidden;
   background: #dfabab;
-  max-width: 1200px;   /* set a max width */
-  width: 90%;          /* make it responsive */
+  /* max-width: 1300px;   set a max width */
+  width: 95%;          /* make it responsive */
 }
 .contact-image {
   object-fit: cover;
