@@ -7,15 +7,40 @@
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/assets/css/main.css" />
   </head>
-  <body>
+  <body class="contact-body">
     <div id="header"></div>
-    <div class="wrapper">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfRfgCEo66vvcRkjWprFrOchG314RME_bxwDpfWjcxNxPhYOw/viewform?embedded=true" width="100%" height="990" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-    </div>
-    
-  
+    <div class="contact-container-1">
+      <div class="row contact-container-2">
+        <!-- Left side: image -->
+        <div class="col-md-6 p-0">
+          <img src="/assets/img/contact.png" alt="Someone is waiting for your Message" class="w-100 h-100 contact-image">
+        </div>
 
-
+        <!-- Right side: form -->
+        <div class="col-md-6 p-4">
+          <h2 class="mb-4">Contact Me</h2>
+            <form action="https://formspree.io/f/mgvzjqoe" method="POST">
+              <div class="mb-3">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Your Email</label>
+                <input type="email" class="form-control" id="email" name="_replyto" required>
+              </div>
+              <div class="mb-3">
+                <label for="subject" class="form-label">Subject</label>
+                <input type="text" class="form-control" id="subject" name="subject" required>
+              </div>
+              <div class="mb-3">
+                <label for="message" class="form-label">Message</label>
+                <textarea class="form-control" id="message" rows="5" name="message" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            </form>
+        </div>
+      </div>
+    </div>    
     <div id="footer"></div>
     <script src="/assets/js/main.js"></script>
     <script src="/assets/js/bootstrap.bundle.min.js"></script>
