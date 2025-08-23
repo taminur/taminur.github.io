@@ -65,11 +65,11 @@ main {
 }
 
 /* Make the row flex */
-.row {
+/* .row {
   display: flex;
   align-items: center;
-  gap: 10px; /* space between items */
-}
+  gap: 10px; /* space between items *
+} */
 
 .row label {
   flex: 1;   /* takes 1 column */
