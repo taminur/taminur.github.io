@@ -1,0 +1,30 @@
+.cv-name {
+    margin-top: 1%;
+    margin-bottom: 1%;
+    text-align: center;
+}
+
+.degree ul {
+  margin-bottom: 0; /* Remove default margin */
+  list-style: none;
+}
+
+.loc-yr {
+  text-align: right; /* Align right column content to right */
+  margin-top: 5px;
+}
+
+.job-desc ul {
+    list-style:square;
+}
+
+.table {
+  background-color: transparent !important;
+  margin-left: 2%;
+}
+
+.table th,
+.table td {
+  background-color: inherit !important;
+  border: none;
+}
