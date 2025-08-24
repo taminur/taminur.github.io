@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Land Calculator</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/project.css" />
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+  <div class="converter-container text-center w-120">
+    
+    <!-- First Conversion -->
+    <h3 class="mb-4">Decimal to Ana-Gonda</h3>
+    <form id="form_decimalToAna" class="mb-5">
+      <div class="row g-2 justify-content-center align-items-center">
+        <!-- Input -->
+        <div class="col-6 col-md-2">
+          <input type="number" step="any" id="decimalInput" class="form-control" required />
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="decimalInput" class="col-form-label">Decimal</label>
+        </div>
+        <!-- Button -->
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Convert</button>
+        </div>
+        <!-- Reset Button -->
+        <div class="col-md-2">
+          <button type="reset" class="btn btn-outline-secondary w-100">Reset</button>
+        </div>
+        <!-- Result -->
+        <div class="col-md-5 text-center">
+          <span id="result-1" class="fw-bold"></span>
+        </div>
+      </div>
+    </form>
+
+    <!-- Second Conversion -->
+    <h3 class="mb-4">Ana-Gonda to Decimal</h3>
+    <form id="form_anaToDecimal">
+      <div class="row g-2 justify-content-center align-items-center">
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="anaInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="anaInput" class="col-form-label">Ana</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="gondaInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="gondaInput" class="col-form-label">Gonda</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="koraInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="koraInput" class="col-form-label">Kora</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="krantiInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="krantiInput" class="col-form-label">Kranti</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="tilInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="tilInput" class="col-form-label">Til</label>
+        </div>
+        <!-- Button -->
+        <div class="col-6 col-md-6">
+          <button type="submit" class="btn btn-success w-100">Convert</button>
+        </div>
+        <!-- Reset Button -->
+        <div class="col-6 col-md-6">
+          <button type="reset" class="btn btn-outline-secondary w-100">Reset</button>
+        </div>
+        <!-- Result -->
+        <div class="col-md-12 text-center">
+          <span id="result-2" class="fw-bold"></span>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+
+    <div id="footer"></div>
+    <script src="/assets/js/project.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

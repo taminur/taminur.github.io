@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gold Calculator</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/project.css" />
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+  <div class="converter-container text-center w-120">
+    
+    <!-- First Conversion -->
+    <h3 class="mb-4">Gram(s) to Vori-Ana</h3>
+    <form id="form_gmToVori" class="mb-5">
+      <div class="row g-2 justify-content-center align-items-center">
+        <!-- Input -->
+        <div class="col-6 col-md-2">
+          <input type="number" step="any" id="gmInput" class="form-control" required />
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="gmInput" class="col-form-label">Grams</label>
+        </div>
+        <!-- Button -->
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Convert</button>
+        </div>
+        <!-- Reset Button -->
+        <div class="col-md-2">
+          <button type="reset" class="btn btn-outline-secondary w-100">Reset</button>
+        </div>
+        <!-- Result -->
+        <div class="col-md-5 text-center">
+          <span id="result-1" class="fw-bold"></span>
+        </div>
+      </div>
+    </form>
+
+    <!-- Second Conversion -->
+    <h3 class="mb-4">Vori-Ana to Gram(s)</h3>
+    <form id="form_voriToGram">
+      <div class="row g-2 justify-content-center align-items-center">
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="voriInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="voriInput" class="col-form-label">Vori</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="anaInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="anaInput" class="col-form-label">Ana</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="rotiInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="rotiInput" class="col-form-label">Roti</label>
+        </div>
+        <!-- Input -->
+        <div class="col-6 col-md-1">
+          <input type="number" id="ptInput" class="form-control"/>
+        </div>
+        <!-- Label -->
+        <div class="col-6 col-md-1 text-start">
+          <label for="ptInput" class="col-form-label">Point</label>
+        </div>
+        <!-- Button -->
+        <div class="col-6 col-md-2">
+          <button type="submit" class="btn btn-success w-100">Convert</button>
+        </div>
+        <!-- Reset Button -->
+        <div class="col-6 col-md-2">
+          <button type="reset" class="btn btn-outline-secondary w-100">Reset</button>
+        </div>
+        <!-- Result -->
+        <div class="col-md-12 text-center">
+          <span id="result-2" class="fw-bold"></span>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+
+    <div id="footer"></div>
+    <script src="/assets/js/project.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
