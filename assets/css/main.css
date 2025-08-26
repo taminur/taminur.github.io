@@ -52,3 +52,29 @@ main {
   object-fit: cover;
   height: 100%;
 }
+
+.cv-skill a:is(:link, :visited, :active, :focus) {
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.cv-skill a {
+  position: relative;
+}
+
+.cv-skill a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.cv-skill a:hover::after {
+  width: 100%;
+}
