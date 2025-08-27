@@ -9,6 +9,20 @@ body {
   margin-top: 5%;
 }
 
+/* Adjust margin-top for screens up to 768px wide (e.g., tablets/mobiles) */
+@media screen and (max-width: 768px) {
+  body {
+    margin-top: 12%;
+  }
+}
+
+/* Further adjustment for screens up to 480px wide (e.g., smaller phones) */
+@media screen and (max-width: 480px) {
+  body {
+    margin-top: 15%;
+  }
+}
+
 /* Remove body padding if you want main to be edge-to-edge */
 body.no-padding {
   padding-top: 0 !important;
