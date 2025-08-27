@@ -1,18 +1,37 @@
 body {
-  background-color: gray !important;
+  background-color: #15182e;
+  color: lightgrey;
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /*Full screen height */
-  padding-top: 60px;
-  padding-bottom: 0px;
-}
-main {
-  flex: 1; /* Take available space */
-  display: flex;
-  align-items: center; /* Vertical center */
-  justify-content: center; /* Horizontal center */
+  min-height: 100vh;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  margin-top: 5%;
 }
 
+/* Remove body padding if you want main to be edge-to-edge */
+body.no-padding {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+main {
+  display: flex;
+  flex: 1; /* Take all available space */
+  align-items: center;
+  justify-content: center;
+  width: 100vw; /* Full viewport width */
+  min-height: 100vh; /* Full viewport height */
+  margin: 0;
+  padding: 0;
+  background-color: transparent; /* Temporary to see area */
+}
+
+/* If you need to compensate for fixed header */
+main.with-header-offset {
+  margin-top: -60px; /* Counteract body padding */
+  padding-top: 60px; /* Restore space for content */
+}
 .text-justify {
   text-align: justify;
 }
@@ -44,37 +63,11 @@ main {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   border-radius: 12px;
   overflow: hidden;
-  background: #dfabab;
-  /* max-width: 1300px;   set a max width */
-  width: 95%;          /* make it responsive */
+  background: lightsteelblue;
+  color: #15182e;
+  width: 90%;          /* make it responsive */
 }
 .contact-image {
   object-fit: cover;
   height: 100%;
-}
-
-.cv-skill a:is(:link, :visited, :active, :focus) {
-  color: inherit;
-  font: inherit;
-  font-weight: inherit;
-  text-decoration: none;
-}
-
-.cv-skill a {
-  position: relative;
-}
-
-.cv-skill a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background-color: currentColor;
-  transition: width 0.3s ease;
-}
-
-.cv-skill a:hover::after {
-  width: 100%;
 }

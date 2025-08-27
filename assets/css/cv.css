@@ -25,6 +25,39 @@
 
 .table th,
 .table td {
-  background-color: inherit !important;
+  background-color: transparent;
   border: none;
+}
+
+table,
+table td,
+table th,
+table tr {
+  color: inherit !important; /* Inherit from parent */
+}
+
+.cv-skill a:is(:link, :visited, :active, :focus) {
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.cv-skill a {
+  position: relative;
+}
+
+.cv-skill a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.cv-skill a:hover::after {
+  width: 100%;
 }
