@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ana-Gonda Calculator</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <style>
+        h1 { text-align:center }
+        .box {padding:15px; margin-bottom:15px; border-radius:8px }
+        input { width:80px; margin:4px }
+        button { margin:4px; padding:7px 12px }
+        .values button { background:#e0e6ff }
+        .selected { background:#4caf50 !important; color:white }
+        .list { font-size:0.9em; color:#dbf10f }
+        .result { font-weight:bold }
+    </style>
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+  <div class="converter-container text-center w-120">
+    <h1>Ana–Gonda Unit Calculator</h1>
+
+<div class="box">
+  <h3>Input</h3>
+  <input id="taka" placeholder="Taka">
+  <input id="ana" placeholder="Ana">
+  <input id="gonda" placeholder="Gonda">
+  <input id="kora" placeholder="Kora">
+  <input id="kranti" placeholder="Kranti">
+  <input id="til" placeholder="Til">
+  <br>
+  <button onclick="storeValue()">Store</button>
+  <button onclick="resetInput()">Reset Input</button>
+</div>
+
+<div class="box">
+  <h3>Stored Values</h3>
+  <div id="storedValues" class="values"></div>
+  <div id="valueList" class="list"></div>
+  <button onclick="resetStore()">Reset Stored Variables</button>
+</div>
+
+<div class="box">
+  <h3>Operations</h3>
+  <button onclick="add()">Add</button>
+  <button onclick="subtract()">Subtract</button>
+  <button onclick="sumAllStoredValues()">ΣAll</button>
+
+  <br><br>
+  <input id="factor" placeholder="Number">
+  <button onclick="multiply()">Multiply</button>
+  <button onclick="divide()">Divide</button>
+</div>
+
+<div class="box result" id="result"></div>
+<button onclick="resetResult()">Reset Result</button> 
+
+</div>
+</div>
+
+<div id="footer"></div>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<script>
+const UNIT = { taka:76800, ana:4800, gonda:240, kora:60, kranti:20 };
+
+let values = [];
+let selected = [];
+let id = 1;
+
+/* ---------- conversion ---------- */
+function toTil(v){
+  return (v.taka||0)*UNIT.taka + (v.ana||0)*UNIT.ana +
+         (v.gonda||0)*UNIT.gonda + (v.kora||0)*UNIT.kora +
+         (v.kranti||0)*UNIT.kranti + (v.til||0);
+}
+
+function fromTil(t){
+  const s = t<0?-1:1; t=Math.abs(t);
+  const taka=Math.floor(t/UNIT.taka); t%=UNIT.taka;
+  const ana=Math.floor(t/UNIT.ana); t%=UNIT.ana;
+  const gonda=Math.floor(t/UNIT.gonda); t%=UNIT.gonda;
+  const kora=Math.floor(t/UNIT.kora); t%=UNIT.kora;
+  const kranti=Math.floor(t/UNIT.kranti);
+  const til=t%UNIT.kranti;
+  return {s,taka,ana,gonda,kora,kranti,til};
+}
+
+// function fmt(o){
+//   return `${o.taka} taka ${o.ana} ana ${o.gonda} gonda ${o.kora} kora ${o.kranti} kranti ${o.til} til`;
+// }
+
+function fmt(o){
+  let parts = [];
+  if(o.taka) parts.push(`${o.taka} taka`);
+  if(o.ana) parts.push(`${o.ana} ana`);
+  if(o.gonda) parts.push(`${o.gonda} gonda`);
+  if(o.kora) parts.push(`${o.kora} kora`);
+  if(o.kranti) parts.push(`${o.kranti} kranti`);
+  if(o.til) parts.push(`${o.til} til`);
+  if(parts.length===0) return "0 til";
+  return parts.join(" ");
+}
+
+
+/* ---------- store ---------- */
+function storeValue(){
+  const v={
+    taka:+taka.value, ana:+ana.value, gonda:+gonda.value,
+    kora:+kora.value, kranti:+kranti.value, til:+til.value
+  };
+  values.push({ id:id++, til:toTil(v) });
+  draw();
+}
+
+/* ---------- UI ---------- */
+// function draw(){
+//   storedValues.innerHTML="";
+//   valueList.innerHTML="";
+//   values.forEach(v=>{
+//     const b=document.createElement("button");
+//     b.textContent="V"+v.id;
+//     b.title=fmt(fromTil(v.til));
+//     b.onclick=()=>select(v,b);
+//     storedValues.appendChild(b);
+
+//     valueList.innerHTML+=`V${v.id} = ${fmt(fromTil(v.til))}<br>`;
+//   });
+// }
+
+function draw(){
+  storedValues.innerHTML="";
+  valueList.innerHTML="";
+
+  // ----- Ans button -----
+  if(ans !== null){
+    const b = document.createElement("button");
+    b.textContent = "Ans";
+    b.title = fmt(fromTil(ans));
+    b.onclick = () => select({ id:"Ans", til:ans }, b);
+    storedValues.appendChild(b);
+
+    valueList.innerHTML += `Ans = ${fmt(fromTil(ans))}<br>`;
+  }
+
+  // ----- normal variables -----
+  values.forEach(v=>{
+    const b=document.createElement("button");
+    b.textContent="V"+v.id;
+    b.title=fmt(fromTil(v.til));
+    b.onclick=()=>select(v,b);
+    storedValues.appendChild(b);
+
+    valueList.innerHTML+=`V${v.id} = ${fmt(fromTil(v.til))}<br>`;
+  });
+}
+
+
+function select(v,btn){
+  if(selected.length===2){
+    selected=[];
+    document.querySelectorAll(".values button").forEach(b=>b.classList.remove("selected"));
+  }
+  selected.push(v);
+  btn.classList.add("selected");
+}
+
+/* ---------- operations ---------- */
+function add(){ binary((a,b)=>a+b); }
+function subtract(){ binary((a,b)=>a-b); }
+
+function binary(fn){
+  if(selected.length!==2) return alert("Select two values");
+  show(fn(selected[0].til, selected[1].til));
+}
+
+function multiply(){
+  if(selected.length!==1) return alert("Select one value");
+  const n=+factor.value;
+  if(!n) return alert("Enter number");
+  show(selected[0].til * n);
+}
+
+function divide(){
+  if(selected.length!==1) return alert("Select one value");
+  const n=+factor.value;
+  if(!n) return alert("Invalid divisor");
+  show(Math.floor(selected[0].til / n));
+}
+
+function sumAllStoredValues(){
+  if(values.length === 0) {
+    alert("No stored values to sum");
+    return;
+  }
+
+  let sum = 0;
+
+  values.forEach(v => {
+    sum += v.til;
+  });
+
+  show(sum);   // shows result + stores as Ans
+}
+
+
+
+/* ---------- result ---------- */
+// function show(t){
+//   const r=fromTil(t);
+//   result.innerHTML =
+//     (r.s<0?"-":"") + fmt(r) +
+//     `<br><button onclick="storeResult(${t})">Store Result</button>`;
+// }
+
+let ans = null;   // stores last result in til
+
+function show(t){
+  ans = t; // <-- store as Ans
+  draw();  // redraw buttons to reflect Ans
+
+  const r = fromTil(t);
+  result.innerHTML =
+    (r.s<0?"-":"") + fmt(r) +
+    `<br><small>(Stored as Ans)</small>
+     <br><button onclick="storeResult(${t})">Store Result</button>`;
+}
+
+function storeResult(t){
+  values.push({ id:id++, til:t });
+  draw();
+}
+
+/* ---------- reset ---------- */
+function resetInput(){
+  ["taka","ana","gonda","kora","kranti","til"].forEach(id=>{
+    document.getElementById(id).value="";
+  });
+}
+
+function resetResult(){
+  result.innerHTML="";
+  selected=[];
+  document.querySelectorAll(".values button")
+    .forEach(b=>b.classList.remove("selected"));
+}
+
+// function resetStore(){
+//   if(!confirm("Delete all stored variables?")) return;
+//   values=[];
+//   selected=[];
+//   id=1;
+//   storedValues.innerHTML="";
+//   valueList.innerHTML="";
+//   result.innerHTML="";
+// }
+
+function resetStore(){
+  if(!confirm("Delete all stored variables?")) return;
+
+  values = [];
+  selected = [];
+  ans = null;
+  id = 1;
+
+  storedValues.innerHTML = "";
+  valueList.innerHTML = "";
+  result.innerHTML = "";
+}
+
+
+</script>
+  </body>
+</html>
