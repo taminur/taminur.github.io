@@ -220,13 +220,16 @@ function sumAllStoredValues(){
 let ans = null;   // stores last result in til
 
 function show(t){
-  ans = t; // <-- store as Ans
-  draw();  // redraw buttons to reflect Ans
+  ans = t;       // store as Ans
+  draw();        // refresh buttons
 
   const r = fromTil(t);
+  const takaDec = tilToTakaDecimal(t);
+
   result.innerHTML =
     (r.s<0?"-":"") + fmt(r) +
-    `<br><small>(Stored as Ans)</small>
+    `<br>
+     <small>(= ${takaDec} taka, stored as Ans)</small>
      <br><button onclick="storeResult(${t})">Store Result</button>`;
 }
 
@@ -249,15 +252,9 @@ function resetResult(){
     .forEach(b=>b.classList.remove("selected"));
 }
 
-// function resetStore(){
-//   if(!confirm("Delete all stored variables?")) return;
-//   values=[];
-//   selected=[];
-//   id=1;
-//   storedValues.innerHTML="";
-//   valueList.innerHTML="";
-//   result.innerHTML="";
-// }
+function tilToTakaDecimal(til){
+  return (til / UNIT.taka).toFixed(5); // 5 decimals is clean
+}
 
 function resetStore(){
   if(!confirm("Delete all stored variables?")) return;
