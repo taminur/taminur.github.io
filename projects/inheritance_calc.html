@@ -31,11 +31,20 @@
           >Total property<input id="tot" type="number" min="0" value="1000000"
         /></label>
         <label>Unit<input id="unit" value="Taka" size="8" /></label>
+        <label
+          class="chk"
+          title="Children of a son/daughter who died before the deceased take their parent's share"
+          ><input type="checkbox" id="mflo" checked /> Apply MFLO 1961 s.4
+          (representation of predeceased child)</label
+        >
         <div class="acts">
           <button id="undo" title="Undo">↶ Undo</button
           ><button id="redo" title="Redo">↷ Redo</button
           ><button id="reset" title="Remove all blocks">Reset</button
-          ><button class="go" id="calc">Calculate</button>
+          ><button class="go" id="calc">Calculate</button
+          ><button id="print" title="Download organogram and table as PDF">
+            ⬇ Print PDF
+          </button>
         </div>
       </div>
       <div id="board">
@@ -51,6 +60,7 @@
         For real cases, consult a qualified scholar or lawyer.
       </p>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="/assets/js/inheritance.js"></script>
   </body>
 </html>

@@ -274,6 +274,17 @@ th {
   color: var(--mut);
   font-size: 12px;
 }
+.chk {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  color: var(--tx);
+  font-size: 13px;
+  max-width: 240px;
+}
+.chk input {
+  width: auto;
+}
 .note {
   color: var(--mut);
   font-size: 12px;
