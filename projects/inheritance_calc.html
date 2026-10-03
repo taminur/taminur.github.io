@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Inheritance Calculator (Muslim Law)</title>
+    <link rel="stylesheet" href="/assets/css/inheritance.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Inheritance Calculator</h1>
+      <p class="sub">
+        Drag (or tap) a Male / Female block onto the board, name it, and choose
+        its relationship to the deceased. Then press Calculate.
+      </p>
+      <div class="bar">
+        <div class="pal">
+          <div class="chip M" draggable="true" data-g="M">+ Male</div>
+          <div class="chip F" draggable="true" data-g="F">+ Female</div>
+        </div>
+        <label
+          >Deceased is<select id="dg">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select></label
+        >
+        <label
+          >Total property<input id="tot" type="number" min="0" value="1000000"
+        /></label>
+        <label>Unit<input id="unit" value="Taka" size="8" /></label>
+        <button class="go" id="calc">Calculate</button>
+      </div>
+      <div id="board">
+        <svg id="svg"></svg>
+        <div id="dec">Deceased</div>
+      </div>
+      <div class="res" id="res">
+        <span class="note">Results will appear here.</span>
+      </div>
+      <p class="note">
+        Follows the Hanafi-style rules summarised at uttoradhikar.gov.bd (fixed
+        shares, residuaries, Awl and Radd). Covers the listed relatives only.
+        For real cases, consult a qualified scholar or lawyer.
+      </p>
+    </div>
+    <script src="/assets/js/inheritance.js"></script>
+  </body>
+</html>
