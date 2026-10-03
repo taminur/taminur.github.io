@@ -131,7 +131,25 @@ button {
   font-weight: 700;
   padding: 9px 18px;
   cursor: pointer;
+}
+.acts {
+  display: flex;
+  gap: 6px;
   margin-left: auto;
+  flex-wrap: wrap;
+}
+.acts button {
+  cursor: pointer;
+  padding: 9px 12px;
+}
+.acts button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.anim .blk {
+  transition:
+    left 0.4s,
+    top 0.4s;
 }
 #board {
   position: relative;

@@ -34,7 +34,18 @@ const $ = (s) => document.querySelector(s),
   svg = $("#svg"),
   dec = $("#dec");
 let blocks = [],
-  uid = 0;
+  uid = 0,
+  org = false,
+  orgHtml = "",
+  hist = [],
+  hi = -1;
+const EMPTY = '<span class="note">Results will appear here.</span>';
+function place(b, x, y) {
+  b.x = x;
+  b.y = y;
+  b.el.style.left = x + "px";
+  b.el.style.top = y + "px";
+}
 
 // ---------- fractions ----------
 const gcd = (a, b) => (b ? gcd(b, a % b) : a);
@@ -238,8 +249,8 @@ function relOptions(b) {
       .join("")
   );
 }
-function addBlock(g, x, y) {
-  const b = { id: ++uid, g, rel: "", name: "" },
+function addBlock(g, x, y, d) {
+  const b = { id: ++uid, g, rel: d ? d.rel : "", name: d ? d.name : "" },
     el = document.createElement("div");
   el.className = "blk " + g;
   el.innerHTML = `<div class="hd"><span>${g == "M" ? "Male" : "Female"}</span><b title="Remove">×</b></div>
@@ -250,17 +261,29 @@ function addBlock(g, x, y) {
   sel.innerHTML = relOptions(b);
   sel.onchange = () => {
     b.rel = sel.value;
+    org = false;
     draw();
+    commit();
   };
-  el.querySelector("input").oninput = (e) => (b.name = e.target.value);
+  const inp = el.querySelector("input");
+  inp.value = b.name;
+  inp.oninput = (e) => (b.name = e.target.value);
+  inp.onchange = () => commit();
   el.querySelector("b").onclick = () => {
     el.remove();
     blocks = blocks.filter((z) => z !== b);
+    org = false;
     draw();
+    commit();
   };
   const r = board.getBoundingClientRect();
-  el.style.left = Math.max(0, Math.min(x, r.width - 170)) + "px";
-  el.style.top = Math.max(70, Math.min(y, r.height - 150)) + "px";
+  d
+    ? place(b, x, y)
+    : place(
+        b,
+        Math.max(0, Math.min(x, r.width - 170)),
+        Math.max(70, Math.min(y, r.height - 150)),
+      );
   // drag on board
   const hd = el.querySelector(".hd");
   hd.onpointerdown = (e) => {
@@ -269,24 +292,32 @@ function addBlock(g, x, y) {
     const ox = e.clientX - el.offsetLeft,
       oy = e.clientY - el.offsetTop;
     hd.onpointermove = (m) => {
+      org = false;
       const R = board.getBoundingClientRect();
-      el.style.left =
-        Math.max(0, Math.min(m.clientX - ox, R.width - el.offsetWidth)) + "px";
-      el.style.top =
-        Math.max(0, Math.min(m.clientY - oy, R.height - el.offsetHeight)) +
-        "px";
+      place(
+        b,
+        Math.max(0, Math.min(m.clientX - ox, R.width - el.offsetWidth)),
+        Math.max(0, Math.min(m.clientY - oy, R.height - el.offsetHeight)),
+      );
       draw();
     };
     hd.onpointerup = () => {
       hd.onpointermove = null;
+      commit();
     };
   };
   board.appendChild(el);
   blocks.push(b);
   b.sel = sel;
+  org = false;
   draw();
+  if (!d) commit();
 }
 function draw() {
+  if (org) {
+    svg.innerHTML = orgHtml;
+    return;
+  }
   const R = board.getBoundingClientRect(),
     d = dec.getBoundingClientRect();
   const dx = d.left + d.width / 2 - R.left,
@@ -331,9 +362,120 @@ $("#dg").onchange = () => {
     if (b.rel == "husband" || b.rel == "wife") b.rel = "";
     b.sel.innerHTML = relOptions(b);
   });
+  org = false;
   draw();
+  commit();
 };
-window.addEventListener("resize", draw);
+window.addEventListener("resize", () => (org ? arrange(true) : draw()));
+
+// ---------- history ----------
+const snap = () =>
+  JSON.stringify({
+    dg: $("#dg").value,
+    b: blocks.map((b) => ({
+      g: b.g,
+      rel: b.rel,
+      name: b.name,
+      x: b.x,
+      y: b.y,
+    })),
+  });
+function upd() {
+  $("#undo").disabled = hi < 1;
+  $("#redo").disabled = hi >= hist.length - 1;
+}
+function commit() {
+  const s = snap();
+  if (s === hist[hi]) return;
+  hist.splice(hi + 1);
+  hist.push(s);
+  hi++;
+  upd();
+}
+function fit() {
+  board.style.height =
+    Math.max(560, ...blocks.map((b) => b.y + b.el.offsetHeight + 20)) + "px";
+}
+function restore(s) {
+  const o = JSON.parse(s);
+  blocks.forEach((b) => b.el.remove());
+  blocks = [];
+  $("#dg").value = o.dg;
+  o.b.forEach((d) => addBlock(d.g, d.x, d.y, d));
+  org = false;
+  fit();
+  draw();
+  $("#res").innerHTML = EMPTY;
+  upd();
+}
+$("#undo").onclick = () => {
+  if (hi > 0) restore(hist[--hi]);
+};
+$("#redo").onclick = () => {
+  if (hi < hist.length - 1) restore(hist[++hi]);
+};
+$("#reset").onclick = () => {
+  blocks.forEach((b) => b.el.remove());
+  blocks = [];
+  org = false;
+  fit();
+  draw();
+  $("#res").innerHTML = EMPTY;
+  commit();
+};
+
+// ---------- organogram layout ----------
+const ROWS = [
+  ["Spouse", ["husband", "wife"]],
+  ["Parents & ancestors", ["f", "m", "gf", "pgm", "mgm"]],
+  ["Descendants", ["son", "dau", "ss", "sd"]],
+  ["Siblings", ["fb", "fs", "cb", "cs", "ub", "us"]],
+  ["Extended relatives", ["fn", "cn", "fu", "cu"]],
+  ["Unassigned", [""]],
+];
+function arrange(quiet) {
+  const W = board.clientWidth,
+    cx = W / 2,
+    BW = 168,
+    G = 12,
+    per = Math.max(1, Math.floor((W - 16 + G) / (BW + G)));
+  const dB = dec.offsetTop + dec.offsetHeight;
+  let y = dB + 34,
+    h = "",
+    lastBus = dB;
+  if (!quiet) {
+    board.classList.add("anim");
+    setTimeout(() => board.classList.remove("anim"), 450);
+  }
+  ROWS.forEach(([label, keys]) => {
+    const bs = blocks
+      .filter((b) => keys.includes(b.rel))
+      .sort((a, b) => keys.indexOf(a.rel) - keys.indexOf(b.rel));
+    for (let i = 0; i < bs.length; i += per) {
+      const ch = bs.slice(i, i + per),
+        w = ch.length * BW + (ch.length - 1) * G,
+        x0 = Math.max(8, cx - w / 2),
+        top = y + 16;
+      const xs = ch.map((b, j) => x0 + j * (BW + G) + BW / 2);
+      h += `<line x1="${Math.min(cx, ...xs)}" y1="${y}" x2="${Math.max(cx, ...xs)}" y2="${y}"/>`;
+      if (i == 0)
+        h += `<text x="8" y="${y - 5}" style="text-anchor:start">${label}</text>`;
+      ch.forEach((b, j) => {
+        place(b, x0 + j * (BW + G), top);
+        h += `<line x1="${xs[j]}" y1="${y}" x2="${xs[j]}" y2="${top}"/>`;
+      });
+      lastBus = y;
+      y = top + Math.max(...ch.map((b) => b.el.offsetHeight)) + 30;
+    }
+  });
+  orgHtml = `<line x1="${cx}" y1="${dB}" x2="${cx}" y2="${lastBus}"/>` + h;
+  board.style.height = Math.max(560, y) + "px";
+  org = true;
+  draw();
+}
+hist = [snap()];
+hi = 0;
+upd();
 
 // ---------- calculate ----------
 $("#calc").onclick = () => {
@@ -374,4 +516,6 @@ $("#calc").onclick = () => {
     (skipped
       ? `<p class="note warn">${skipped} block(s) without a relationship were ignored.</p>`
       : "");
+  arrange();
+  commit();
 };

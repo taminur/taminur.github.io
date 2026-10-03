@@ -31,7 +31,12 @@
           >Total property<input id="tot" type="number" min="0" value="1000000"
         /></label>
         <label>Unit<input id="unit" value="Taka" size="8" /></label>
-        <button class="go" id="calc">Calculate</button>
+        <div class="acts">
+          <button id="undo" title="Undo">↶ Undo</button
+          ><button id="redo" title="Redo">↷ Redo</button
+          ><button id="reset" title="Remove all blocks">Reset</button
+          ><button class="go" id="calc">Calculate</button>
+        </div>
       </div>
       <div id="board">
         <svg id="svg"></svg>
