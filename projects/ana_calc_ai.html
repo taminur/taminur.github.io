@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ana-Gonda Calculator</title>
+    <style>
+        :root{--bg:#f4f1ea;--card:#fff;--tx:#1f2a24;--mut:#6b756e;--bd:#d9d4c7;--k:#ece8dc;--op:#d3e4d9;--ac:#1f6f4a;--er:#b3261e}
+        @media(prefers-color-scheme:dark){:root{--bg:#141a17;--card:#1d2621;--tx:#e8eee9;--mut:#93a097;--bd:#33423a;--k:#26332c;--op:#2d4538;--ac:#3fae7a;--er:#ff8a80}}
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,-apple-system,Segoe UI,sans-serif;display:flex;justify-content:center;padding:12px}
+        .app{width:100%;max-width:440px;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px}
+        header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+        h1{font-size:17px;margin:0}
+        select,input{font:inherit;color:var(--tx);background:var(--k);border:1px solid var(--bd);border-radius:8px;padding:6px 8px}
+        select{max-width:140px}
+        #in{width:100%;font-size:17px;padding:10px}
+        #res{font-size:24px;font-weight:600;text-align:right;min-height:34px;margin-top:8px;word-break:break-word}
+        #res.err{color:var(--er);font-size:15px;font-weight:500}
+        .small{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mut);font-size:13px;margin-top:4px;flex-wrap:wrap}
+        #vars{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:4px}
+        button{font:inherit;color:var(--tx);background:var(--k);border:1px solid var(--bd);border-radius:10px;padding:12px 0;cursor:pointer}
+        button:active{transform:scale(.96)}
+        .chip{padding:5px 9px;font-size:13px;border-radius:999px;background:var(--op)}
+        .units{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+        .units button{padding:8px 0;font-size:13px}
+        .pad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+        .op{background:var(--op)}
+        .fn{color:var(--ac);font-weight:600}
+        .eq{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:700}
+        .tip{color:var(--mut);font-size:12px;margin:10px 0 0;line-height:1.4}
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <h1>Ana-Gonda Calculator</h1>
+            <label class="small" style="margin:0">Precision
+                <select id="prec"></select>
+            </label>
+        </header>
+        <input id="in" inputmode="none" autocomplete="off" spellcheck="false" placeholder="e.g. 5 ana 10 gonda + 3 ana 15 gonda">
+        <div id="res">0</div>
+        <div class="small"><span id="sub"></span>
+            <label>Decimal in
+                <select id="du"></select>
+            </label>
+        </div>
+        <div class="small"><span>Ans = <b id="ans">–</b></span></div>
+        <div id="vars"></div>
+        <div class="units" id="units"></div>
+        <div class="pad" id="pad"></div>
+        <p class="tip">Tap or type. <b>=</b> stores the result in <b>Ans</b>. <b>STO</b> saves the current result in a new variable (M1, M2, …); tap a variable to use it. <b>Dec→</b> turns a plain decimal number into traditional units. Everything is rounded to the chosen
+            precision after every step.</p>
+    </div>
+    <script>
+        const $=s=>document.querySelector(s);
+        const U=['taka','ana','gonda','kora','kranti','til','renu','ghun','bindu'];
+        const PP={ana:16n,gonda:20n,kora:4n,kranti:3n,til:20n,renu:4n,ghun:4n,bindu:20n};
+        const B={};{let v=1n;for(const u of [...U].reverse()){B[u]=v;if(u!=='taka')v*=PP[u];}}
+        const AL={tk:'taka',a:'ana',g:'gonda',k:'kora',kr:'kranti',t:'til',r:'renu',gh:'ghun',b:'bindu'};
+        U.forEach(u=>AL[u]=u);
+        
+        /* ---- exact rational arithmetic (BigInt) ---- */
+        const gcd=(a,b)=>{a=a<0n?-a:a;b=b<0n?-b:b;while(b){[a,b]=[b,a%b]}return a};
+        const R=(n,d=1n)=>{if(d<0n){n=-n;d=-d}const g=gcd(n,d)||1n;return{n:n/g,d:d/g}};
+        const add=(x,y)=>R(x.n*y.d+y.n*x.d,x.d*y.d),sub=(x,y)=>R(x.n*y.d-y.n*x.d,x.d*y.d);
+        const mul=(x,y)=>R(x.n*y.n,x.d*y.d),div=(x,y)=>R(x.n*y.d,x.d*y.n);
+        const pn=x=>{const[a,b='']=x.split('.');return R(BigInt((a||'0')+b),10n**BigInt(b.length))};
+        
+        /* ---- state & precision ---- */
+        let st={prec:'til',ans:null,last:null,vars:{},cnt:0},fresh=false;
+        const PR=()=>st.prec==='exact'?null:st.prec;
+        function quant(v){const p=PR();if(!p)return v;const s=B[p],N=v.n<0n?-v.n:v.n,k=(2n*N+v.d*s)/(2n*v.d*s);return R((v.n<0n?-k:k)*s)}
+        const num=v=>({m:false,v}),mea=v=>({m:true,v:quant(v)});
+        
+        /* ---- formatting ---- */
+        function dec(r,P=10){const neg=r.n<0n,N=neg?-r.n:r.n,s=10n**BigInt(P),k=(2n*N*s+r.d)/(2n*r.d),t=k.toString().padStart(P+1,'0');return(neg&&k?'-':'')+t.slice(0,-P)+'.'+t.slice(-P)}
+        const trim=r=>{const s=dec(r);return s.includes('.')?s.replace(/0+$/,'').replace(/\.$/,''):s};
+        function fmt(x){
+          if(!x.m)return trim(x.v);
+          const v=x.v;if(v.n===0n)return'0';
+          const neg=v.n<0n,N=neg?-v.n:v.n,out=[],p=PR();let ap=false;
+          if(p){const s=B[p];let rem=((2n*N+v.d*s)/(2n*v.d*s))*s;
+            for(const u of U.slice(0,U.indexOf(p)+1)){const q=rem/B[u];rem%=B[u];if(q)out.push(q+' '+u)}}
+          else{let rem=(2n*N*100n+v.d)/(2n*v.d);ap=v.d!==1n&&(N*100n)%v.d!==0n;
+            for(const u of U.slice(0,-1)){const s=B[u]*100n,q=rem/s;rem%=s;if(q)out.push(q+' '+u)}
+            if(rem)out.push((Number(rem)/100)+' bindu')}
+          if(!out.length)return'0';
+          return(neg?'-':'')+out.join(' ')+(ap?' (≈)':'');
+        }
+        
+        /* ---- parser / evaluator ---- */
+        function lex(s){
+          const T=[],re=/\s*(?:(\d+\.?\d*|\.\d+)|([A-Za-z]+)(\d*)|(.))/y;let m;s=s.trim();
+          while(re.lastIndex<s.length&&(m=re.exec(s))){
+            if(m[1])T.push({t:'n',v:pn(m[1])});
+            else if(m[2]){const L=m[2].toLowerCase(),D=m[3];
+              if(L==='m'&&D)T.push({t:'id',v:'M'+D});
+              else{if(L==='ans')T.push({t:'id',v:'Ans'});
+                else if(AL[L])T.push({t:'u',v:AL[L]});
+                else throw Error('Unknown "'+m[2]+'"');
+                if(D)T.push({t:'n',v:pn(D)})}}
+            else{const c={'×':'*','÷':'/','−':'-'}[m[4]]||m[4];
+              if(!'+-*/()'.includes(c))throw Error('Unexpected "'+m[4]+'"');
+              T.push({t:'op',v:c})}
+          }
+          return T;
+        }
+        function op(o,a,b){
+          if(o==='+'||o==='-'){
+            if(a.m!==b.m)throw Error("Can't mix a measure with a plain number");
+            const v=o==='+'?add(a.v,b.v):sub(a.v,b.v);return a.m?mea(v):num(v)}
+          if(o==='*'){
+            if(a.m&&b.m)throw Error("Can't multiply two measures");
+            const v=mul(a.v,b.v);return(a.m||b.m)?mea(v):num(v)}
+          if(b.v.n===0n)throw Error('Divide by zero');
+          if(!a.m&&b.m)throw Error("Can't divide a number by a measure");
+          const v=div(a.v,b.v);return(a.m&&!b.m)?mea(v):num(v);
+        }
+        function evaluate(s){
+          const T=lex(s);let i=0;
+          const pk=()=>T[i],nx=()=>T[i++],isOp=(t,...c)=>t&&t.t==='op'&&c.includes(t.v);
+          function E(){let a=Tm();while(isOp(pk(),'+','-')){const o=nx().v;a=op(o,a,Tm())}return a}
+          function Tm(){let a=Un();while(isOp(pk(),'*','/')){const o=nx().v;a=op(o,a,Un())}return a}
+          function Un(){if(isOp(pk(),'-')){nx();const a=Un();const v=R(-a.v.n,a.v.d);return a.m?mea(v):num(v)}return Pr()}
+          function Pr(){
+            const t=nx();if(!t)throw Error('Incomplete expression');
+            if(isOp(t,'(')){const a=E();if(!isOp(nx(),')'))throw Error('Missing )');return a}
+            if(t.t==='id'){
+              if(t.v==='Ans')return st.ans||num(R(0n));
+              if(st.vars[t.v])return st.vars[t.v];
+              throw Error('Unknown variable '+t.v)}
+            if(t.t==='n'){
+              if(pk()&&pk().t==='u'){
+                let tot=mul(t.v,R(B[nx().v]));
+                while(pk()&&pk().t==='n'&&T[i+1]&&T[i+1].t==='u'){const n=nx();tot=add(tot,mul(n.v,R(B[nx().v])))}
+                return mea(tot)}
+              return num(t.v)}
+            throw Error('Unexpected "'+t.v+'"');
+          }
+          const r=E();if(i<T.length)throw Error('Unexpected "'+T[i].v+'"');return r;
+        }
+        
+        /* ---- persistence (works offline; ignored if the browser blocks it) ---- */
+        const ser=x=>({m:x.m,n:''+x.v.n,d:''+x.v.d}),de=o=>({m:o.m,v:{n:BigInt(o.n),d:BigInt(o.d)}});
+        function save(){try{localStorage.setItem('anaCalc',JSON.stringify({prec:st.prec,cnt:st.cnt,ans:st.ans&&ser(st.ans),
+          vars:Object.fromEntries(Object.entries(st.vars).map(([k,v])=>[k,ser(v)]))}))}catch(e){}}
+        function load(){try{const o=JSON.parse(localStorage.getItem('anaCalc')||'null');if(!o)return;
+          st.prec=o.prec||'til';st.cnt=o.cnt||0;st.ans=st.last=o.ans?de(o.ans):null;
+          for(const k in o.vars)st.vars[k]=de(o.vars[k])}catch(e){}}
+        
+        /* ---- UI ---- */
+        function ins(s){
+          const e=$('#in'),t=s.trim();
+          if(fresh){e.value=(t.length===1&&'+-*/'.includes(t))?'Ans':'';fresh=false}
+          e.setRangeText(s,e.selectionStart,e.selectionEnd,'end');e.focus();
+        }
+        function refresh(){
+          const r=$('#res');r.className='';r.textContent=st.last?fmt(st.last):'0';
+          const u=$('#du').value;
+          $('#sub').textContent=(st.last&&st.last.m)?'= '+dec(div(st.last.v,R(B[u])))+' '+u+' (decimal)':'';
+          $('#ans').textContent=st.ans?fmt(st.ans):'–';
+          const box=$('#vars');box.innerHTML='';
+          for(const k in st.vars){const b=document.createElement('button');b.className='chip';
+            b.textContent=k+' = '+fmt(st.vars[k]);b.title='Insert '+k;b.onclick=()=>ins(k);box.append(b)}
+          if(st.cnt){const c=document.createElement('button');c.className='chip';c.textContent='clear vars';
+            c.onclick=()=>{st.vars={};st.cnt=0;save();refresh()};box.append(c)}
+        }
+        function showErr(m){const r=$('#res');r.className='err';r.textContent=m;$('#sub').textContent=''}
+        function calc(){
+          const s=$('#in').value.trim();if(!s)return;
+          try{const v=evaluate(s);st.ans=st.last=v;fresh=true;save();refresh()}
+          catch(e){fresh=false;showErr(e.message)}
+        }
+        function sto(){
+          if(!fresh&&$('#in').value.trim())calc();
+          if(!st.last)return showErr('Nothing to store yet');
+          const name='M'+(++st.cnt);st.vars[name]=st.last;save();refresh();
+        }
+        function fromDec(){
+          try{const v=evaluate($('#in').value.trim());
+            if(v.m)throw Error('Enter a plain decimal number, e.g. 0.75');
+            const m=mea(mul(v.v,R(B[$('#du').value])));
+            st.ans=st.last=m;fresh=true;save();refresh()}
+          catch(e){showErr(e.message)}
+        }
+        function clr(){$('#in').value='';fresh=false;refresh();$('#in').focus()}
+        function back(){const e=$('#in');e.value=e.value.trimEnd().replace(/([A-Za-z]+\d*|.)$/,'');fresh=false}
+        
+        const pad=[
+         ['C',clr,'fn'],['⌫',back,'fn'],['(',null],[')',null],
+         ['7'],['8'],['9'],['÷',' / ','op'],
+         ['4'],['5'],['6'],['×',' * ','op'],
+         ['1'],['2'],['3'],['−',' - ','op'],
+         ['0'],['.'],['Ans'],['+',' + ','op'],
+         ['STO',sto,'fn'],['Dec→',fromDec,'fn'],['=',calc,'eq'],['Ans','Ans','fn']
+        ];
+        pad.splice(23,1);                       // keep a clean 4-column grid (23 keys + wide '=')
+        pad.forEach(([l,a,c])=>{
+          const b=document.createElement('button');b.textContent=l;if(c)b.className=c;
+          b.onclick=()=>typeof a==='function'?a():ins(a==null?l:a);
+          if(l==='=')b.style.gridColumn='span 2';
+          $('#pad').append(b);
+        });
+        U.forEach(u=>{const b=document.createElement('button');b.textContent=u;b.onclick=()=>ins(' '+u+' ');$('#units').append(b)});
+        ['til','kora','gonda','ana','taka','kranti','renu','ghun','bindu','exact'].forEach(p=>{
+          const o=document.createElement('option');o.value=p;o.textContent=p==='til'?'til (default)':p;$('#prec').append(o)});
+        U.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;$('#du').append(o)});
+        $('#prec').onchange=e=>{st.prec=e.target.value;save();refresh()};
+        $('#du').onchange=refresh;
+        $('#in').addEventListener('keydown',e=>{if(e.key==='Enter')calc()});
+        $('#in').addEventListener('input',()=>{fresh=false});
+        load();$('#prec').value=st.prec;refresh();
+    </script>
+</body>
+
+</html>
